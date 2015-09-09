@@ -9,7 +9,7 @@ variable external_net_id { }
 variable subnet_cidr { default = "10.10.10.0/24" }
 variable ip_version { default = "4" }
 variable short_name { default = "kube" }
-variable long_name { default = "kubernertes" }
+variable long_name { default = "kubernetes" }
 
 resource "template_file" "cloud-init-master" {
   filename = "cloud-configs/master.yaml"
