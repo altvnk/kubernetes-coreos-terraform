@@ -1,34 +1,25 @@
-variable master_flavor { }
-variable node_flavor { }
-variable keypair_name { }
-variable image_name { }
-variable node_count { }
-variable security_groups { }
-variable floating_pool { }
-variable external_net_id { }
-variable subnet_cidr { default = "10.10.10.0/24" }
+variable master_flavor {}
+variable node_flavor {}
+variable keypair_name {}
+variable image_name {}
+variable node_count {}
+variable security_groups {}
+variable floating_pool {}
+variable external_net_id {}
+variable subnet_cidr {}
 variable ip_version { default = "4" }
-variable short_name { default = "kube" }
-variable long_name { default = "kubernetes" }
+variable short_name {}
+variable kube_version {}
 
 resource "template_file" "cloud-init-master" {
   filename = "cloud-configs/master.yaml"
-    # vars {
-    # master_address = "${ openstack_compute_instance_v2.master.network.0.fixed_ip_v4 }"
-    # }
 }
 
 resource "template_file" "cloud-init-node" {
   filename = "cloud-configs/node.yaml"
   vars {
     master_address = "${ openstack_compute_instance_v2.master.network.0.fixed_ip_v4 }"
-  }
-}
-
-resource "template_file" "kubeconfig" {
-  filename = "templates/kubeconfig.yaml"
-  vars {
-    master_external_address = "${ openstack_compute_floatingip_v2.ms-master-floatip.address }"
+    kube_version = "${ var.kube_version }"
   }
 }
 

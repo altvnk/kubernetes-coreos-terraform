@@ -1,0 +1,29 @@
+# copy this file and openstack.sample.tf or openstack-floating.sample.tf to
+# the root directory before running terraform commands
+
+# specify Openstack values for authorization here
+tenant_id = ""
+
+# Openstack instances variables
+# Instance size, flavor like "m1.medium" (reqired)
+master_flavor = ""
+node_flavor = ""
+# Image to boot instances from (reqired)
+image_name = ""
+# Name of floating addresses pool (reqired)
+floating_pool = ""
+# Name of external network to attach router interface (reqired)
+external_net_id = ""
+# Path on filesystem to public_key, default ~/.ssh/id_rsa
+public_key = ""
+# Keypair name to be created, default "kubernetes"
+keypair_name = ""
+# Kubernetes variables
+hostname_prefix = ""
+subnet_cidr = ""
+kube_version = ""
+kube_node_count = ""
+kube_cluster_name = ""
+kube_cluster_iprange = ""
+kube_cluster_dns = ""
+kube_flannel_network = ""
