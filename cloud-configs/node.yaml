@@ -88,7 +88,9 @@ coreos:
         --logtostderr=true \
         --cadvisor-port=4194 \
         --healthz-bind-address=0.0.0.0 \
-        --healthz-port=10248
+        --healthz-port=10248 \
+        --cluster_dns=10.100.0.53 \
+        --cluster_domain=cluster.local
         Restart=always
         RestartSec=10
   update:
