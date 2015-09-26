@@ -36,8 +36,8 @@ coreos:
         Description=Generate service-account key file
 
         [Service]
-        ExecStartPre=-/usr/bin/mkdir -p /opt/bin
-        ExecStart=/bin/openssl genrsa -out /opt/bin/kube-serviceaccount.key 2048 2>/dev/null
+        ExecStartPre=-/usr/bin/mkdir -p /opt/ssl
+        ExecStart=/bin/openssl genrsa -out /opt/ssl/kube-serviceaccount.key 2048 2>/dev/null
         RemainAfterExit=yes
         Type=oneshot
     - name: setup-network-environment.service
@@ -66,7 +66,7 @@ coreos:
             [Unit]
             Requires=etcd2.service
             [Service]
-            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"4.0.0.0/16", "Backend": {"Type": "vxlan"}}'
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network":"$kube_flannel_network", "Backend": {"Type": "vxlan"}}'
     - name: docker.service
       command: start
     - name: kube-apiserver.service
@@ -81,11 +81,11 @@ coreos:
         [Service]
         EnvironmentFile=/etc/network-environment
         ExecStartPre=-/usr/bin/mkdir -p /opt/bin
-        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-apiserver -z /opt/bin/kube-apiserver https://storage.googleapis.com/kubernetes-release/release/v1.1.0/bin/linux/amd64/kube-apiserver
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-apiserver -z /opt/bin/kube-apiserver https://storage.googleapis.com/kubernetes-release/release/$kube_version/bin/linux/amd64/kube-apiserver
         ExecStartPre=/usr/bin/chmod +x /opt/bin/kube-apiserver
         ExecStartPre=/opt/bin/wupiao 127.0.0.1:2379/v2/machines
         ExecStart=/opt/bin/kube-apiserver \
-        --service-account-key-file=/opt/bin/kube-serviceaccount.key \
+        --service-account-key-file=/opt/ssl/kube-serviceaccount.key \
         --service-account-lookup=false \
         --admission-control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
         --runtime-config=api/v1 \
@@ -94,7 +94,7 @@ coreos:
         --insecure-port=8080 \
         --kubelet-https=true \
         --secure-port=6443 \
-        --service-cluster-ip-range=10.100.0.0/16 \
+        --service-cluster-ip-range=$kube_cluster_iprange \
         --etcd-servers=http://127.0.0.1:2379 \
         --public-address-override=$private_ipv4 \
         --logtostderr=true
@@ -110,7 +110,7 @@ coreos:
         After=kube-apiserver.service
 
         [Service]
-        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-controller-manager -z /opt/bin/kube-controller-manager https://storage.googleapis.com/kubernetes-release/release/v1.1.0/bin/linux/amd64/kube-controller-manager
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-controller-manager -z /opt/bin/kube-controller-manager https://storage.googleapis.com/kubernetes-release/release/$kube_version/bin/linux/amd64/kube-controller-manager
         ExecStartPre=/usr/bin/chmod +x /opt/bin/kube-controller-manager
         ExecStart=/opt/bin/kube-controller-manager \
         --service-account-private-key-file=/opt/bin/kube-serviceaccount.key \
@@ -128,7 +128,7 @@ coreos:
         After=kube-apiserver.service
 
         [Service]
-        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-scheduler -z /opt/bin/kube-scheduler https://storage.googleapis.com/kubernetes-release/release/v1.1.0/bin/linux/amd64/kube-scheduler
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kube-scheduler -z /opt/bin/kube-scheduler https://storage.googleapis.com/kubernetes-release/release/$kube_version/bin/linux/amd64/kube-scheduler
         ExecStartPre=/usr/bin/chmod +x /opt/bin/kube-scheduler
         ExecStart=/opt/bin/kube-scheduler --master=127.0.0.1:8080
         Restart=always
