@@ -10,7 +10,7 @@ module "keypair" {
 
 module "secgroup" {
   source = "./terraform/secgroup"
-  cluster_name = "${ var.cluster_name }"
+  cluster_name = "${ var.kube_cluster_name }"
 }
 
 module "hosts" {
@@ -20,9 +20,10 @@ module "hosts" {
   master_flavor = "${ var.master_flavor }"
   node_flavor = "${ var.node_flavor }"
   image_name = "${ var.image_name }"
-  keypair_name = "${ module.kube-keypair.keypair_name }"
-  security_groups = "${ module.kube-secgroup.cluster_name }"
-  node_count = "${ var.kube_node_count }"
+  keypair_name = "${ module.keypair.keypair_name }"
+  security_groups = "${ module.secgroup.cluster_name }"
+  master_count = "${ var.master_count }"
+  node_count = "${ var.node_count }"
   floating_pool = "${ var.floating_pool }"
   external_net_id = "${ var.external_net_id }"
   kube_version = "${var.kube_version}"
