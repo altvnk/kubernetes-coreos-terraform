@@ -3,3 +3,4 @@
 **/.terraform
 /*.tf
 /*.tfvars
+/etcd_discovery_url.txt
