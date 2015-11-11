@@ -9,12 +9,13 @@ variable node_flavor {}
 variable image_name {}
 variable floating_pool {}
 variable external_net_id {}
-variable kube_version {}
-variable kube_node_count {}
+variable node_count {}
+variable master_count {}
+#variable kube_version {}
 variable kube_cluster_name {}
 variable kube_cluster_iprange {}
 variable kube_cluster_dns {}
-variable kube_flannel_network {}
+variable flannel_network {}
 
 provider "openstack" {
   auth_url = "${ var.auth_url }"
@@ -30,7 +31,7 @@ module "kube-keypair" {
 
 module "kube-secgroup" {
   source = "./terraform/secgroup"
-  cluster_name = "${ var.cluster_name }"
+  cluster_name = "${ var.kube_cluster_name }"
 }
 
 module "kube-hosts" {
@@ -40,7 +41,12 @@ module "kube-hosts" {
   image_name = "${ var.image_name }"
   keypair_name = "${ module.kube-keypair.keypair_name }"
   security_groups = "${ module.kube-secgroup.cluster_name }"
-  node_count = "${ var.kube_node_count }"
+  node_count = "${ var.node_count }"
+  master_count = "${ var.master_count }"
   floating_pool = "${ var.floating_pool }"
   external_net_id = "${ var.external_net_id }"
+  flannel_network = "${ var.flannel_network }"
+  kube_cluster_name = "${ var.kube_cluster_name }"
+  kube_cluster_dns = "${ var.kube_cluster_dns }"
+  kube_cluster_iprange = "${ var.kube_cluster_iprange }"
 }

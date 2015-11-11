@@ -9,7 +9,6 @@ tenant_name = ""
 # Misc variables
 public_key = "~/.ssh/id_rsa.pub"
 keypair_name = ""
-cluster_name = ""
 master_flavor = ""
 node_flavor = ""
 image_name = "CoreOS"

@@ -14,6 +14,9 @@ variable long_name { default = "kubernetes" }
 variable docker_node_volume { default = 20 }
 variable etcd_discovery_file { default = "etcd_discovery_url.txt" }
 variable flannel_network { default = "4.0.0.0/16" }
+variable kube_cluster_name { }
+variable kube_cluster_iprange { }
+variable kube_cluster_dns { }
 
 resource "template_file" "etcd_discovery_url" {
   filename      = "/dev/null"
@@ -29,6 +32,9 @@ resource "template_file" "cloud-init-master" {
     hostname           = "${ var.short_name }-master-${ format("%02d", count.index+1) }"
     etcd_discovery_url = "${ file(var.etcd_discovery_file) }"
     flannel_network    = "${ var.flannel_network }"
+    kube_cluster_name  = "${ var.kube_cluster_name }"
+    kube_cluster_iprange  = "${ var.kube_cluster_iprange }"
+    kube_cluster_dns  = "${ var.kube_cluster_dns }"
   }
   depends_on    = "template_file.etcd_discovery_url"
 }
